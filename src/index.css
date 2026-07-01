@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+  /* Keyboard focus ring + caret, tuned per theme below. */
+  --ring: rgba(43, 42, 40, 0.38);
+  --caret: #5a5752;
+}
+.dark {
+  --ring: rgba(243, 240, 234, 0.42);
+  --caret: #cfccc6;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+}
+
+@supports (height: 100dvh) {
+  html, body, #root { height: 100dvh; }
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Proportional kana/punctuation spacing + kerning — calmer Japanese setting. */
+  font-feature-settings: "palt" 1, "kern" 1;
+  caret-color: var(--caret);
+}
+
+/* Soft, on-palette text selection instead of the default system blue. */
+::selection {
+  background: rgba(154, 123, 79, 0.2);
+}
+.dark ::selection {
+  background: rgba(243, 240, 234, 0.22);
+}
+
+/* Quiet keyboard-focus ring (only for keyboard users, never on mouse click). */
+*:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Quiet, narrow scrollbars that match the calm aesthetic. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.12);
+  border-radius: 9999px;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* A subtle range slider that fits the minimal palette.
+   Note: opacity lives on the track only — putting it on the element would
+   also fade the thumb (children can't exceed their parent's opacity). */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 9999px;
+  background: rgba(120, 116, 110, 0.28);
+  cursor: pointer;
+}
+.dark input[type="range"] {
+  background: rgba(220, 216, 210, 0.24);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 120ms ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.14);
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.05);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 120ms ease;
+}
+input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.14);
+}
+
+/* A whisper of depth on the writing canvas (hidden behind a background image). */
+.canvas-depth {
+  background-image: radial-gradient(
+    1200px 620px at 50% 0%,
+    rgba(0, 0, 0, 0.022),
+    transparent 58%
+  );
+}
+.dark .canvas-depth {
+  background-image: radial-gradient(
+    1200px 620px at 50% 0%,
+    rgba(255, 255, 255, 0.028),
+    transparent 58%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[type="range"]::-webkit-slider-thumb,
+  input[type="range"]::-moz-range-thumb {
+    transition: none;
+  }
+}
+
+@media (display-mode: standalone) {
+  .app-shell > header {
+    padding-top: env(safe-area-inset-top);
+    height: calc(3.5rem + env(safe-area-inset-top));
+  }
+  .app-shell {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
