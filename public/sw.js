@@ -1,4 +1,4 @@
-const CACHE = "seion-v1";
+const CACHE = "seion-v1.1.0";
 const SHELL = ["/", "/index.html", "/manifest.webmanifest", "/seion-icon.svg"];
 self.addEventListener("install", (event) => event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL))));
 self.addEventListener("activate", (event) => event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim())));
