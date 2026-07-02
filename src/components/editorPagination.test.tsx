@@ -90,6 +90,15 @@ describe("Editor pagination and IME", () => {
     expect(screen.getByTestId("writing-page-3")).toBeTruthy();
   });
 
+  it("lets clicks reach the body editor through the empty-note placeholder in aspect mode", () => {
+    const emptyNote = { ...note, body: "", bodyHtml: "" };
+    render(
+      <Editor note={emptyNote} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true }} focusMode={false} readOnly={false} onChange={vi.fn()} onToggleFocus={vi.fn()} onToggleAspectMode={vi.fn()} />,
+    );
+    const placeholder = screen.getByText("いま感じていることを、静かに書きとめてください。");
+    expect(placeholder.style.pointerEvents).toBe("none");
+  });
+
   it("applies a fixed display zoom without changing export geometry", () => {
     render(
       <Editor note={note} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true }} focusMode={false} readOnly={false} onChange={vi.fn()} onToggleFocus={vi.fn()} onToggleAspectMode={vi.fn()} />,
