@@ -49,21 +49,24 @@ export function paginateBody(note: Note | null, settings: Settings): string[] {
   const bodyHtml = getBodyHtml(note);
   if (!settings.splitPages) return [bodyHtml];
 
-  const g = cardGeometry(settings.aspect);
+  const g = cardGeometry(settings.aspect, settings);
   const font = FONT_STACKS[settings.font];
 
-  // Height taken by the title block on the first page.
-  const titleMeasurer = makeMeasurer(
-    g.innerWidth,
-    font,
-    g.titleSize,
-    g.titleLineHeight,
-    g.titleLetterSpacing,
-    "500",
-  );
-  titleMeasurer.textContent = note?.title || "無題";
-  const titleH = titleMeasurer.offsetHeight + g.titleMarginBottom;
-  titleMeasurer.remove();
+  // Height taken by the title block on the first page (none when hidden).
+  let titleH = 0;
+  if (settings.cardTitleEnabled) {
+    const titleMeasurer = makeMeasurer(
+      g.innerWidth,
+      font,
+      g.titleSize,
+      g.titleLineHeight,
+      g.titleLetterSpacing,
+      "500",
+    );
+    titleMeasurer.textContent = note?.title || "無題";
+    titleH = titleMeasurer.offsetHeight + g.titleMarginBottom;
+    titleMeasurer.remove();
+  }
 
   const firstLimit = (g.innerHeight - titleH) * SAFETY;
   const restLimit = g.innerHeight * SAFETY;

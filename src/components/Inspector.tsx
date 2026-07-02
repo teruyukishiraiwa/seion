@@ -279,6 +279,9 @@ export function Inspector({
             </Section>
 
             <Section title="文字設定">
+              <span className="block text-[11px] text-neutral-400">
+                文字サイズ・行間・文字間はSNS画像にも反映されます
+              </span>
               <Slider
                 label="文字サイズ"
                 value={settings.fontSize}
@@ -554,6 +557,21 @@ export function Inspector({
                   value={settings.snsTextAlign}
                   labels={{ left: "左寄せ", center: "中央" }}
                   onChange={(v) => update("snsTextAlign", v)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-1">
+                <div className="space-y-0.5">
+                  <span className="block text-[12px] text-neutral-600 dark:text-neutral-300">
+                    タイトルを表示
+                  </span>
+                  <span className="block text-[11px] text-neutral-400">
+                    カード・出力画像にタイトルを載せる
+                  </span>
+                </div>
+                <Toggle
+                  checked={settings.cardTitleEnabled}
+                  onChange={(v) => update("cardTitleEnabled", v)}
                 />
               </div>
 

@@ -28,11 +28,11 @@ export const SnsCard = forwardRef<HTMLDivElement, SnsCardProps>(
   ({ note, settings, scale = 1, page = null }, ref) => {
     // Single source of truth for card dimensions — shared with the pagination
     // logic so "what fits on a card" always matches what is drawn here.
-    const g = cardGeometry(settings.aspect);
+    const g = cardGeometry(settings.aspect, settings);
     const { w, h, padding, titleSize, bodySize, footerSize } = g;
 
     const bodyHtml = page ? page.body : getBodyHtml(note);
-    const showTitle = page ? page.showTitle : true;
+    const showTitle = (page ? page.showTitle : true) && settings.cardTitleEnabled;
     const indicator =
       page && page.total > 1 ? `${page.index + 1} / ${page.total}` : null;
 

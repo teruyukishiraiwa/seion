@@ -4,9 +4,9 @@ import { paginateBody } from "../lib/paginate";
 
 /**
  * Pages of the current note for SNS export, recomputed whenever an input that
- * affects how text flows onto a card changes. The card body uses sizes derived
- * from the aspect ratio (not the editor's font settings), so only those inputs
- * are tracked.
+ * affects how text flows onto a card changes. Card typography scales with the
+ * text settings (fontSize / lineHeight / letterSpacing), so those are tracked
+ * alongside the aspect ratio, title visibility and signature inputs.
  */
 export function usePages(note: Note | null, settings: Settings): string[] {
   const [pages, setPages] = useState<string[]>(() => [note?.body ?? ""]);
@@ -22,6 +22,10 @@ export function usePages(note: Note | null, settings: Settings): string[] {
     settings.splitPages,
     settings.aspect,
     settings.font,
+    settings.fontSize,
+    settings.lineHeight,
+    settings.letterSpacing,
+    settings.cardTitleEnabled,
     settings.signatureImage,
     settings.signatureEnabled,
     settings.signatureWidth,

@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_SETTINGS } from "../constants";
 import type { Note } from "../types";
 import { Editor } from "./Editor";
+import { SnsCard } from "./SnsCard";
 
 afterEach(cleanup);
 
@@ -105,6 +106,25 @@ describe("Editor pagination and IME", () => {
     expect(screen.getByTestId("writing-canvas").className).toContain("layer-light");
     rerender(<Editor {...props} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true, overlayColor: "dark" }} />);
     expect(screen.getByTestId("writing-canvas").className).toContain("layer-dark");
+  });
+
+  it("omits the SnsCard title when cardTitleEnabled is off, even for page 1", () => {
+    const page = { body: "<div>本文</div>", showTitle: true, index: 0, total: 2 };
+    const { rerender, container } = render(
+      <SnsCard note={note} settings={{ ...DEFAULT_SETTINGS, cardTitleEnabled: false }} page={page} />,
+    );
+    expect(container.querySelector("h2")).toBeNull();
+    rerender(<SnsCard note={note} settings={{ ...DEFAULT_SETTINGS, cardTitleEnabled: true }} page={page} />);
+    expect(container.querySelector("h2")?.textContent).toBe("題");
+  });
+
+  it("hides the card title in aspect mode when cardTitleEnabled is off", () => {
+    const props = { note, focusMode: false, readOnly: false, onChange: vi.fn(), onToggleFocus: vi.fn(), onToggleAspectMode: vi.fn() };
+    const { rerender } = render(<Editor {...props} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true, cardTitleEnabled: true }} />);
+    expect(screen.getByRole("textbox", { name: "タイトル" })).toBeTruthy();
+    rerender(<Editor {...props} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true, cardTitleEnabled: false }} />);
+    expect(screen.queryByRole("textbox", { name: "タイトル" })).toBeNull();
+    expect(screen.getByRole("textbox", { name: "本文" })).toBeTruthy();
   });
 
   it("applies a fixed display zoom without changing export geometry", () => {

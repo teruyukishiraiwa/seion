@@ -54,6 +54,7 @@ export const DEFAULT_SETTINGS: Settings = {
   overlayColor: "light",
   snsTextAlign: "left",
   splitPages: false,
+  cardTitleEnabled: true,
   signatureImage: null,
   signatureEnabled: true,
   signatureWidth: 173,

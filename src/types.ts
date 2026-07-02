@@ -45,6 +45,8 @@ export interface Settings {
   snsTextAlign: TextAlign;
   /** Split long bodies across multiple SNS cards instead of clipping. */
   splitPages: boolean;
+  /** Show the note title on the SNS card / export (editor title input unaffected). */
+  cardTitleEnabled: boolean;
   /** Optional author signature rendered at the end of the body. */
   signatureImage: string | null;
   signatureEnabled: boolean;

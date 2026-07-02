@@ -210,7 +210,7 @@ export function Editor({
     letterSpacing: `${settings.letterSpacing}em`,
   };
   const isEmpty = !note.body.trim();
-  const card = cardGeometry(settings.aspect);
+  const card = cardGeometry(settings.aspect, settings);
   const autoCardScale = canvasSize.width > 0 ? canvasSize.width / card.w : 0;
   const cardScale = editorZoom === "auto" ? autoCardScale : editorZoom;
   const displayedCardSize = { width: card.w * cardScale, height: card.h * cardScale };
@@ -260,7 +260,7 @@ export function Editor({
                 ref={scrollRef}
                 style={{ position: "absolute", inset: `0 0 ${card.padding}px 0`, display: "flex", flexDirection: "column", justifyContent: settings.aspect === "9:16" ? "center" : "flex-start", padding: card.padding, overflow: "hidden", fontFamily, textAlign: settings.snsTextAlign, alignItems: settings.snsTextAlign === "center" ? "center" : "flex-start" }}
               >
-                <div key={`title-${noteId}`} contentEditable={!readOnly} aria-readonly={readOnly} suppressContentEditableWarning role="textbox" aria-label="タイトル" spellCheck={false} onInput={(e) => onChange({ title: e.currentTarget.textContent ?? "" })} style={{ width: "100%", maxWidth: "100%", margin: 0, marginBottom: card.titleMarginBottom, padding: 0, outline: 0, background: "transparent", fontFamily, fontSize: card.titleSize, fontWeight: 500, lineHeight: card.titleLineHeight, letterSpacing: `${card.titleLetterSpacing}em`, color: cardTextColor, textAlign: settings.snsTextAlign, overflowWrap: "anywhere", wordBreak: "break-word" }}>{note.title || "無題"}</div>
+                {settings.cardTitleEnabled && <div key={`title-${noteId}`} contentEditable={!readOnly} aria-readonly={readOnly} suppressContentEditableWarning role="textbox" aria-label="タイトル" spellCheck={false} onInput={(e) => onChange({ title: e.currentTarget.textContent ?? "" })} style={{ width: "100%", maxWidth: "100%", margin: 0, marginBottom: card.titleMarginBottom, padding: 0, outline: 0, background: "transparent", fontFamily, fontSize: card.titleSize, fontWeight: 500, lineHeight: card.titleLineHeight, letterSpacing: `${card.titleLetterSpacing}em`, color: cardTextColor, textAlign: settings.snsTextAlign, overflowWrap: "anywhere", wordBreak: "break-word" }}>{note.title || "無題"}</div>}
                 <div className="relative w-full">
                   {isEmpty && <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", fontSize: card.bodySize, lineHeight: card.bodyLineHeight, letterSpacing: `${card.bodyLetterSpacing}em`, color: cardSubColor }}>いま感じていることを、静かに書きとめてください。</div>}
                   {Number.isFinite(firstPageBlockCount) && <style>{`.wysiwyg-first-page-editor > :nth-child(n + ${firstPageBlockCount + 1}) { display: none !important; }`}</style>}

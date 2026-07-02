@@ -19,6 +19,31 @@ describe("WYSIWYG document geometry", () => {
     expect(card.bodySize).toBeLessThan(card.titleSize);
   });
 
+  it("matches the legacy metrics when text settings are omitted or at defaults", () => {
+    const legacy = cardGeometry("9:16");
+    expect(legacy.bodySize).toBeCloseTo(1080 * 0.032, 8);
+    expect(legacy.titleSize).toBeCloseTo(1080 * 0.046, 8);
+    expect(legacy.bodyLineHeight).toBeCloseTo(2.05, 8);
+    expect(legacy.bodyLetterSpacing).toBeCloseTo(0.04, 8);
+    const atDefaults = cardGeometry("9:16", { fontSize: 16, lineHeight: 1.9, letterSpacing: 0.04 });
+    expect(atDefaults).toEqual(legacy);
+  });
+
+  it("scales card typography with the text settings", () => {
+    const card = cardGeometry("9:16", { fontSize: 24, lineHeight: 2.6, letterSpacing: 0.2 });
+    expect(card.bodySize).toBeCloseTo(1080 * 0.032 * 1.5, 8);
+    expect(card.titleSize).toBeCloseTo(1080 * 0.046 * 1.5, 8);
+    expect(card.titleMarginBottom).toBeCloseTo(card.bodySize * 1.4, 8);
+    expect(card.bodyLineHeight).toBeCloseTo(2.05 * (2.6 / 1.9), 8);
+    expect(card.bodyLetterSpacing).toBeCloseTo(0.2, 8);
+    // Frame geometry never depends on text settings.
+    const legacy = cardGeometry("9:16");
+    expect(card.w).toBe(legacy.w);
+    expect(card.h).toBe(legacy.h);
+    expect(card.padding).toBe(legacy.padding);
+    expect(card.innerHeight).toBe(legacy.innerHeight);
+  });
+
   it("uses export-space signature dimensions in WYSIWYG mode", () => {
     const settings = { ...DEFAULT_SETTINGS, signatureWidth: 432, signatureMarginTop: 130 };
     const card = cardGeometry(settings.aspect);
