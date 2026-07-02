@@ -66,6 +66,7 @@ export const SnsCard = forwardRef<HTMLDivElement, SnsCardProps>(
       >
         <div
           ref={ref}
+          className={`layer-${settings.overlayColor}`}
           style={{
             width: w,
             height: h,

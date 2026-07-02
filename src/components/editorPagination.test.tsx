@@ -99,6 +99,14 @@ describe("Editor pagination and IME", () => {
     expect(placeholder.style.pointerEvents).toBe("none");
   });
 
+  it("tags the WYSIWYG card with the layer mode so selection color follows the layer, not the theme", () => {
+    const props = { note, focusMode: false, readOnly: false, onChange: vi.fn(), onToggleFocus: vi.fn(), onToggleAspectMode: vi.fn() };
+    const { rerender } = render(<Editor {...props} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true, overlayColor: "light" }} />);
+    expect(screen.getByTestId("writing-canvas").className).toContain("layer-light");
+    rerender(<Editor {...props} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true, overlayColor: "dark" }} />);
+    expect(screen.getByTestId("writing-canvas").className).toContain("layer-dark");
+  });
+
   it("applies a fixed display zoom without changing export geometry", () => {
     render(
       <Editor note={note} settings={{ ...DEFAULT_SETTINGS, editorAspectMode: true }} focusMode={false} readOnly={false} onChange={vi.fn()} onToggleFocus={vi.fn()} onToggleAspectMode={vi.fn()} />,

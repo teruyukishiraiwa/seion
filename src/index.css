@@ -42,6 +42,18 @@ body {
   background: rgba(243, 240, 234, 0.22);
 }
 
+/* Inside a card, the surface color comes from the layer mode (white/black
+   layer), not the app theme — selection must follow the layer too, or a
+   light selection disappears on a white card in dark mode. */
+.layer-light ::selection,
+.dark .layer-light ::selection {
+  background: rgba(154, 123, 79, 0.28);
+}
+.layer-dark ::selection,
+.dark .layer-dark ::selection {
+  background: rgba(243, 240, 234, 0.22);
+}
+
 /* Quiet keyboard-focus ring (only for keyboard users, never on mouse click). */
 *:focus-visible {
   outline: 2px solid var(--ring);

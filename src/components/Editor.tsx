@@ -241,7 +241,7 @@ export function Editor({
             <div
               data-testid="writing-canvas"
               data-layout="wysiwyg"
-              className="relative overflow-hidden"
+              className={`relative overflow-hidden layer-${settings.overlayColor}`}
               style={{
                 width: card.w,
                 height: card.h,
