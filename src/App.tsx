@@ -9,8 +9,9 @@ import { useNotes } from "./hooks/useNotes";
 import { usePages } from "./hooks/usePages";
 import { useSettings } from "./hooks/useSettings";
 import { usePwaInstall } from "./hooks/usePwaInstall";
+import { articleSettingsFrom, getEffectiveSettings } from "./constants";
 import { exportNodeToPng, pageFilename, safeFilename } from "./lib/exportImage";
-import type { CardPage } from "./types";
+import type { ArticleSettings, CardPage, Settings } from "./types";
 
 type MobilePanel = "notes" | "settings" | null;
 
@@ -40,7 +41,8 @@ export default function App() {
     storageError: settingsStorageError,
     clearStorageError: clearSettingsStorageError,
   } = useSettings();
-  const pages = usePages(selected, settings);
+  const effectiveSettings = getEffectiveSettings(selected, settings);
+  const pages = usePages(selected, effectiveSettings);
   const [focusMode, setFocusMode] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportPage, setExportPage] = useState<CardPage | null>(null);
@@ -69,7 +71,20 @@ export default function App() {
   }, [mobilePanel]);
 
   const title = selected?.title ?? "Seion";
-  const isMultiPage = settings.splitPages && pages.length > 1;
+  const isMultiPage = effectiveSettings.splitPages && pages.length > 1;
+
+  const createNoteWithCurrentSettings = () => {
+    createNote(articleSettingsFrom(effectiveSettings));
+  };
+
+  const updateSelectedArticleSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    if (key === "theme" || key === "editorAspectMode") {
+      update(key, value);
+      return;
+    }
+    if (!selected) return;
+    updateNote(selected.id, { settings: { [key]: value } as Partial<ArticleSettings> });
+  };
 
   const handleExport = async () => {
     const node = exportRef.current;
@@ -79,12 +94,12 @@ export default function App() {
       if (!isMultiPage) {
         setExportPage(null);
         await nextPaint();
-        await exportNodeToPng(node, safeFilename(title, settings.aspect));
+        await exportNodeToPng(node, safeFilename(title, effectiveSettings.aspect));
       } else {
         for (let index = 0; index < pages.length; index += 1) {
           setExportPage({ body: pages[index], showTitle: index === 0, index, total: pages.length });
           await nextPaint();
-          await exportNodeToPng(node, pageFilename(title, settings.aspect, index + 1, pages.length));
+          await exportNodeToPng(node, pageFilename(title, effectiveSettings.aspect, index + 1, pages.length));
           if (index < pages.length - 1) await delay(350);
         }
       }
@@ -104,7 +119,7 @@ export default function App() {
         theme={settings.theme}
         focusMode={focusMode}
         onSetTheme={(theme) => update("theme", theme)}
-        onCreate={createNote}
+        onCreate={createNoteWithCurrentSettings}
         onSetFocusMode={setFocusMode}
         onSave={saveNow}
         onExport={handleExport}
@@ -124,7 +139,7 @@ export default function App() {
                 notes={notes}
                 selectedId={selectedId}
                 onSelect={(id) => { setSelectedId(id); setMobilePanel(null); }}
-                onCreate={() => { createNote(); setMobilePanel(null); }}
+                onCreate={() => { createNoteWithCurrentSettings(); setMobilePanel(null); }}
                 onTrash={trashNote}
                 onRestore={restoreNote}
                 onDeletePermanently={deletePermanently}
@@ -136,7 +151,7 @@ export default function App() {
 
         <Editor
           note={selected}
-          settings={settings}
+          settings={effectiveSettings}
           focusMode={focusMode}
           readOnly={selected?.trashedAt != null}
           onChange={(patch) => { if (selected) { setHasEdited(true); updateNote(selected.id, patch); } }}
@@ -149,14 +164,14 @@ export default function App() {
           <>
             {mobilePanel === "settings" && <button type="button" aria-label="設定を閉じる" className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[1px] xl:hidden" onClick={() => setMobilePanel(null)} />}
             <div className={`${mobilePanel === "settings" ? "translate-x-0" : "translate-x-full"} fixed inset-y-14 right-0 z-40 flex w-[min(22rem,92vw)] transition-transform duration-200 xl:static xl:inset-auto xl:z-auto xl:w-auto xl:translate-x-0 shadow-2xl ring-1 ring-black/10 dark:ring-white/10 xl:shadow-none xl:ring-0 xl:transition-none`}>
-              <Inspector note={selected} settings={settings} update={update} onExport={handleExport} exporting={exporting} pages={pages} />
+              <Inspector note={selected} settings={effectiveSettings} update={updateSelectedArticleSetting} onExport={handleExport} exporting={exporting} pages={pages} />
             </div>
           </>
         )}
       </div>
 
       <div aria-hidden style={{ position: "fixed", left: -99999, top: 0, pointerEvents: "none" }}>
-        <SnsCard ref={exportRef} note={selected} settings={settings} scale={1} page={exportPage} />
+        <SnsCard ref={exportRef} note={selected} settings={effectiveSettings} scale={1} page={exportPage} />
       </div>
 
       <InstallPrompt open={pwa.open} isIos={pwa.isIos} onInstall={pwa.install} onDismiss={pwa.dismiss} onClose={pwa.close} />

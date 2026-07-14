@@ -43,7 +43,7 @@ export function CreditsDialog({ open, onClose }: CreditsDialogProps) {
         <div className="relative p-5 sm:p-8">
           <header className="flex items-start justify-between gap-4 sm:gap-5">
             <div className="min-w-0">
-              <div className="flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.18em] text-neutral-400 sm:text-[10px]"><span>{APP_NAME} / 静音</span><span className="h-px w-4 bg-black/15 dark:bg-white/15" /><span>v1.0</span></div>
+              <div className="flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.18em] text-neutral-400 sm:text-[10px]"><span>{APP_NAME} / 静音</span><span className="h-px w-4 bg-black/15 dark:bg-white/15" /><span>v1.1.1</span></div>
               <h2 id="credits-title" className="mt-2.5 font-serif text-[23px] font-medium tracking-[0.04em] text-neutral-800 dark:text-neutral-100 sm:mt-3 sm:text-[27px]">Credits</h2>
               <p className="mt-1.5 text-[11px] leading-5 text-neutral-500 dark:text-neutral-400 sm:mt-2 sm:text-[12px] sm:leading-6">言葉を置くための、静かな空間。<br />設計、開発、創作の記録。</p>
             </div>

@@ -9,6 +9,8 @@ export interface Note {
   updatedAt: number;
   /** Set while the note is in the trash. */
   trashedAt?: number;
+  /** Per-note output and writing parameters. App display preferences stay global. */
+  settings?: Partial<ArticleSettings>;
 }
 
 export type FontKey = "mincho" | "gothic" | "serif" | "sans";
@@ -54,6 +56,10 @@ export interface Settings {
   signatureMarginTop: number;
   signatureAspectRatio: number;
 }
+
+export type AppSettingsKey = "theme" | "editorAspectMode";
+
+export type ArticleSettings = Omit<Settings, AppSettingsKey>;
 
 /** One paginated SNS card's worth of content. */
 export interface CardPage {

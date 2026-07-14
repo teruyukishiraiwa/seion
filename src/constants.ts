@@ -1,4 +1,4 @@
-import type { AspectRatio, FontKey, Note, Settings } from "./types";
+import type { AppSettingsKey, ArticleSettings, AspectRatio, FontKey, Note, Settings } from "./types";
 
 export const STORAGE_KEYS = {
   notes: "seion:notes",
@@ -61,6 +61,51 @@ export const DEFAULT_SETTINGS: Settings = {
   signatureMarginTop: 35,
   signatureAspectRatio: 2.5,
 };
+
+export const APP_SETTING_KEYS: AppSettingsKey[] = ["theme", "editorAspectMode"];
+
+export const ARTICLE_SETTING_KEYS: Array<keyof ArticleSettings> = [
+  "font",
+  "fontSize",
+  "lineHeight",
+  "letterSpacing",
+  "contentWidth",
+  "aspect",
+  "backgroundImage",
+  "backgroundEnabled",
+  "backgroundPosX",
+  "backgroundPosY",
+  "backgroundBlur",
+  "overlayOpacity",
+  "overlayColor",
+  "snsTextAlign",
+  "splitPages",
+  "cardTitleEnabled",
+  "signatureImage",
+  "signatureEnabled",
+  "signatureWidth",
+  "signatureMarginTop",
+  "signatureAspectRatio",
+];
+
+export function articleSettingsFrom(settings: Settings): ArticleSettings {
+  return ARTICLE_SETTING_KEYS.reduce((articleSettings, key) => {
+    return { ...articleSettings, [key]: settings[key] };
+  }, {} as ArticleSettings);
+}
+
+export function getEffectiveSettings(
+  note: Note | null,
+  globalSettings: Settings,
+): Settings {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...articleSettingsFrom(globalSettings),
+    ...(note?.settings ?? {}),
+    theme: globalSettings.theme,
+    editorAspectMode: globalSettings.editorAspectMode,
+  };
+}
 
 /** Whether a background image should currently be shown anywhere. */
 export function hasActiveBackground(settings: Settings): boolean {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Note } from "../types";
+import type { ArticleSettings, Note } from "../types";
 import { STORAGE_KEYS, createSampleNotes } from "../constants";
 
 export function parseStoredNotes(raw: string | null): Note[] | null {
@@ -134,7 +134,7 @@ export function useNotes() {
     [notes, selectedId],
   );
 
-  const createNote = useCallback(() => {
+  const createNote = useCallback((settings?: Partial<ArticleSettings>) => {
     const now = Date.now();
     const note: Note = {
       id: newId(),
@@ -142,17 +142,25 @@ export function useNotes() {
       body: "",
       createdAt: now,
       updatedAt: now,
+      ...(settings ? { settings } : {}),
     };
     setNotes((previous) => [note, ...previous]);
     setSelectedId(note.id);
   }, []);
 
   const updateNote = useCallback(
-    (id: string, patch: Partial<Pick<Note, "title" | "body" | "bodyHtml">>) => {
+    (id: string, patch: Partial<Pick<Note, "title" | "body" | "bodyHtml" | "settings">>) => {
       setNotes((previous) =>
         previous.map((note) =>
           note.id === id && note.trashedAt == null
-            ? { ...note, ...patch, updatedAt: Date.now() }
+            ? {
+                ...note,
+                ...patch,
+                settings: patch.settings
+                  ? { ...(note.settings ?? {}), ...patch.settings }
+                  : note.settings,
+                updatedAt: Date.now(),
+              }
             : note,
         ),
       );

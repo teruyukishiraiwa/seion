@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { DEFAULT_SETTINGS, getEffectiveSettings } from "../constants";
+import type { Note } from "../types";
 import { parseStoredNotes, replaceLegacySampleNotes } from "./useNotes";
 
 describe("parseStoredNotes", () => {
@@ -9,6 +11,42 @@ describe("parseStoredNotes", () => {
   it("distinguishes missing and invalid-shaped storage", () => {
     expect(parseStoredNotes(null)).toBeNull();
     expect(parseStoredNotes('{"notes":[]}')).toBeNull();
+  });
+});
+
+describe("getEffectiveSettings", () => {
+  const note = (settings?: Note["settings"]): Note => ({
+    id: "note",
+    title: "note",
+    body: "",
+    createdAt: 1,
+    updatedAt: 1,
+    ...(settings ? { settings } : {}),
+  });
+
+  it("applies per-note article parameters over legacy global article settings", () => {
+    const globalSettings = {
+      ...DEFAULT_SETTINGS,
+      aspect: "16:9" as const,
+      fontSize: 18,
+      theme: "dark" as const,
+    };
+
+    const effective = getEffectiveSettings(note({ aspect: "1:1", fontSize: 21 }), globalSettings);
+
+    expect(effective.aspect).toBe("1:1");
+    expect(effective.fontSize).toBe(21);
+    expect(effective.theme).toBe("dark");
+  });
+
+  it("keeps app display preferences global even when a note contains old values", () => {
+    const effective = getEffectiveSettings(
+      note({ aspect: "1:1" }),
+      { ...DEFAULT_SETTINGS, theme: "dark", editorAspectMode: true },
+    );
+
+    expect(effective.theme).toBe("dark");
+    expect(effective.editorAspectMode).toBe(true);
   });
 });
 describe("replaceLegacySampleNotes", () => {
